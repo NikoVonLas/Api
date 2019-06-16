@@ -1087,6 +1087,36 @@ class BotApi
     }
 
     /**
+     * Use this method to edit media messages sent by the bot or via the bot
+     *
+     * @param int|string $chatId
+     * @param int $messageId
+     * @param array|null $media
+     * @param Types\ReplyKeyboardMarkup|Types\ReplyKeyboardHide|Types\ForceReply|
+     *        Types\ReplyKeyboardRemove|null $replyMarkup
+     * @param string $inlineMessageId
+     *
+     * @return \TelegramBot\Api\Types\Message
+     * @throws \TelegramBot\Api\InvalidArgumentException
+     * @throws \TelegramBot\Api\Exception
+     */
+    public function editMessageMedia(
+        $chatId,
+        $messageId,
+        $media = null,
+        $replyMarkup = null,
+        $inlineMessageId = null
+    ) {
+        return Message::fromResponse($this->call('editMessageMedia', [
+            'chat_id' => $chatId,
+            'message_id' => $messageId,
+            'inline_message_id' => $inlineMessageId,
+            'media' => $media,
+            'reply_markup' => is_null($replyMarkup) ? $replyMarkup : $replyMarkup->toJson(),
+        ]));
+    }
+
+    /**
      * Use this method to edit only the reply markup of messages sent by the bot or via the bot
      *
      * @param int|string $chatId
