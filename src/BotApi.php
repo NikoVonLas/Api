@@ -1111,7 +1111,7 @@ class BotApi
             'chat_id' => $chatId,
             'message_id' => $messageId,
             'inline_message_id' => $inlineMessageId,
-            'media' => $media,
+            'media' => (is_array($media)) ? json_encode($media, JSON_FORCE_OBJECT) : null,
             'reply_markup' => is_null($replyMarkup) ? $replyMarkup : $replyMarkup->toJson(),
         ]));
     }
