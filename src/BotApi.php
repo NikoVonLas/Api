@@ -1013,12 +1013,13 @@ class BotApi
      *
      * @return bool
      */
-    public function answerCallbackQuery($callbackQueryId, $text = null, $showAlert = false)
+    public function answerCallbackQuery($callbackQueryId, $text = null, $showAlert = false, $cache = 0)
     {
         return $this->call('answerCallbackQuery', [
             'callback_query_id' => $callbackQueryId,
             'text' => $text,
             'show_alert' => (bool)$showAlert,
+            'cache' => $cache
         ]);
     }
 
@@ -1091,7 +1092,7 @@ class BotApi
      *
      * @param int|string $chatId
      * @param int $messageId
-     * @param array|null $media
+     * @param TelegramBot\Api\Types\InputMedia\InputMediaPhoto $media
      * @param Types\ReplyKeyboardMarkup|Types\ReplyKeyboardHide|Types\ForceReply|
      *        Types\ReplyKeyboardRemove|null $replyMarkup
      * @param string $inlineMessageId
@@ -1103,7 +1104,7 @@ class BotApi
     public function editMessageMedia(
         $chatId,
         $messageId,
-        $media = null,
+        $media,
         $replyMarkup = null,
         $inlineMessageId = null
     ) {
@@ -1111,7 +1112,7 @@ class BotApi
             'chat_id' => $chatId,
             'message_id' => $messageId,
             'inline_message_id' => $inlineMessageId,
-            'media' => (is_array($media)) ? json_encode($media, JSON_FORCE_OBJECT) : null,
+            'media' => $media->toJson(),
             'reply_markup' => is_null($replyMarkup) ? $replyMarkup : $replyMarkup->toJson(),
         ]));
     }
