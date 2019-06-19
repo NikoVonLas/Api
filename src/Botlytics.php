@@ -49,11 +49,12 @@ class Botlytics
      *
      * @param \TelegramBot\Api\Types\Message $message
      * @param string $payload
+     * @param string "incoming" or "outgoing" $kind 
      *
      * @throws \TelegramBot\Api\Exception
      * @throws \TelegramBot\Api\HttpException
      */
-    public function track(Message $message, $payload = 'Message', $kind)
+    public function track(Message $message, $payload = 'Message', $kind = 'outgoing')
     {
         $headers = ['Content-Type'=>'application/json'];
         $body = [
@@ -71,13 +72,5 @@ class Botlytics
         if ($response->getStatusCode() != 201) {
             throw new Exception('Error Processing Request: ' . $response->getStatusCode());
         }
-    }
-
-    /**
-     * Destructor. Close curl
-     */
-    public function __destruct()
-    {
-        $this->curl && curl_close($this->curl);
     }
 }
