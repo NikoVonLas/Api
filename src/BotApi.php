@@ -143,9 +143,9 @@ class BotApi
     protected $token;
 
     /**
-     * Botan tracker
+     * Botlytics tracker
      *
-     * @var \TelegramBot\Api\Botan
+     * @var \TelegramBot\Api\Bolytics
      */
     protected $tracker;
 
@@ -167,7 +167,7 @@ class BotApi
      * Constructor
      *
      * @param string $token Telegram Bot API token
-     * @param string|null $trackerToken Yandex AppMetrica application api_key
+     * @param string|null $trackerToken Botlytics tocken
      */
     public function __construct($token, $trackerToken = null)
     {
@@ -175,7 +175,7 @@ class BotApi
         $this->token = $token;
 
         if ($trackerToken) {
-            $this->tracker = new Botan($trackerToken);
+            $this->tracker = new Botlytics($trackerToken);
         }
     }
 
@@ -474,7 +474,7 @@ class BotApi
             'timeout' => $timeout,
         ]));
 
-        if ($this->tracker instanceof Botan) {
+        if ($this->tracker instanceof Botlytics) {
             foreach ($updates as $update) {
                 $this->trackUpdate($update);
             }
@@ -1189,16 +1189,16 @@ class BotApi
 
     /**
      * @param \TelegramBot\Api\Types\Update $update
-     * @param string $eventName
+     * @param string $payload
      *
      * @throws \TelegramBot\Api\Exception
      */
-    public function trackUpdate(Update $update, $eventName = 'Message')
+    public function trackUpdate(Update $update, $payload = 'Message')
     {
         if (!in_array($update->getUpdateId(), $this->trackedEvents)) {
             $this->trackedEvents[] = $update->getUpdateId();
 
-            $this->track($update->getMessage(), $eventName);
+            $this->track($update->getMessage(), $payload, 'incoming');
 
             if (count($this->trackedEvents) > self::MAX_TRACKED_EVENTS) {
                 $this->trackedEvents = array_slice($this->trackedEvents, round(self::MAX_TRACKED_EVENTS / 4));
@@ -1210,14 +1210,15 @@ class BotApi
      * Wrapper for tracker
      *
      * @param \TelegramBot\Api\Types\Message $message
-     * @param string $eventName
+     * @param string $payload
+     * @param string "incoming" or "outgoing" $kind 
      *
      * @throws \TelegramBot\Api\Exception
      */
-    public function track(Message $message, $eventName = 'Message')
+    public function track(Message $message, $payload = 'Message', $kind = 'outgoing')
     {
-        if ($this->tracker instanceof Botan) {
-            $this->tracker->track($message, $eventName);
+        if ($this->tracker instanceof Botlytics) {
+            $this->tracker->track($message, $payload, $kind);
         }
     }
 

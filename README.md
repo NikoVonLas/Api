@@ -81,12 +81,12 @@ $bot->sendMediaGroup($chatId, $media);
 #### Client
 
 ```php
-require_once "vendor/autoload.php";
+require_once 'vendor/autoload.php';
 
 try {
     $bot = new \TelegramBot\Api\Client('YOUR_BOT_API_TOKEN');
-    // or initialize with botan.io tracker api key
-    // $bot = new \TelegramBot\Api\Client('YOUR_BOT_API_TOKEN', 'YOUR_BOTAN_TRACKER_API_KEY');
+    // or initialize with Botlytics tracker api key
+    // $bot = new \TelegramBot\Api\Client('YOUR_BOT_API_TOKEN', 'YOUR_BOTLYTICS_TRACKER_API_KEY');
     
 
     $bot->command('ping', function ($message) use ($bot) {
@@ -100,41 +100,40 @@ try {
 }
 ```
 
-### Botan SDK (not supported more)
+### Botlytics
 
-[Botan](http://botan.io) is a telegram bot analytics system based on [Yandex.Appmetrica](http://appmetrica.yandex.com/).
-In this document you can find how to setup Yandex.Appmetrica account, as well as examples of Botan SDK usage.
+[Botlytics](https://botlytics.co) is a telegram bot analytics system.
+In this document you can find how to setup Botlytics.
 
 ### Creating an account
- * Register at http://appmetrica.yandex.com/
- * After registration you will be prompted to create Application. Please use @YourBotName as a name.
- * Save an API key from settings page, you will use it as a token for Botan API calls.
+ * Register at https://botlytics.co/
+ * After registration you will be prompted to create Bot.
+ * Save an API key from bot page, you will use it as a token for Botlytics API calls.
  * Download lib for your language, and use it as described below. Don`t forget to insert your token!
 
-Since we are only getting started, you may discover that some existing reports in AppMetriсa aren't properly working for Telegram bots, like Geography, Gender, Age, Library, Devices, Traffic sources and Network sections. We will polish that later.
 
 ## SDK usage
 
 #### Standalone
 
 ```php
-$tracker = new \TelegramBot\Api\Botan('YOUR_BOTAN_TRACKER_API_KEY');
+$tracker = new \TelegramBot\Api\Botlytics('YOUR_BOTLYTICS_TRACKER_API_KEY');
 
-$tracker->track($message, $eventName);
+$tracker->track($message, $payload, $kind);
 ```
 
 #### API Wrapper
 ```php
-$bot = new \TelegramBot\Api\BotApi('YOUR_BOT_API_TOKEN', 'YOUR_BOTAN_TRACKER_API_KEY');
+$bot = new \TelegramBot\Api\BotApi('YOUR_BOT_API_TOKEN', 'YOUR_BOTLYTICS_TRACKER_API_KEY');
 
-$bot->track($message, $eventName);
+$bot->track($message, $payload, $kind);
 ```
 
-_You can use method `getUpdates()` and all incoming messages will be automatically tracked as `Message`-event_
+_You can use method `getUpdates()` and all incoming messages will be automatically tracked with `Message` payload
 
 #### Client
 ```php
-$bot = new \TelegramBot\Api\Client('YOUR_BOT_API_TOKEN', 'YOUR_BOTAN_TRACKER_API_KEY');
+$bot = new \TelegramBot\Api\Client('YOUR_BOT_API_TOKEN', 'YOUR_BOTLYTICS_TRACKER_API_KEY');
 ```
 
 _All registered commands are automatically tracked as command name_
@@ -155,11 +154,12 @@ Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ## Security
 
-If you discover any security related issues, please email mail@igusev.ru instead of using the issue tracker.
+If you discover any security related issues, please email design.by.niko.las@gmail.ru instead of using the issue tracker.
 
 ## Credits
 
 - [Ilya Gusev](https://github.com/iGusev)
+- [Nikolas Denis](https://github.com/NikoVonLas)
 - [All Contributors](../../contributors)
 
 ## License
