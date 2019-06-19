@@ -68,7 +68,7 @@ class Botlytics
             ]
         ];
         $body = json_encode($body, JSON_FORCE_OBJECT);
-        $response = $client->post("{BASE_URL}?token={$this->token}", ['headers' => $headers, 'body' => $body]);
+        $response = $this->guzzle->post("{BASE_URL}?token={$this->token}", ['headers' => $headers, 'body' => $body]);
         if ($response->getStatusCode() != 201) {
             throw new Exception('Error Processing Request: ' . $response->getStatusCode());
         }
