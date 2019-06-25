@@ -211,6 +211,11 @@ class BotApi
         }
         
         $response = $this->guzzle->request(($data) ? 'POST' : 'GET', $this->getUrl() . '/' . $method, $options);
+        if ($response->getStatusCode() == 200) {
+            $response = $response->getBody();
+        } else {
+            throw new Exception(!empty($response->getReasonPhrase()) ? $response->getReasonPhrase(); : 'Guzzle request error', $response->getStatusCode());
+        }
         file_put_contents('php://stderr', "\n" . 'Response: ' . $response . "\n");
         $response = self::jsonValidate($response, $this->returnArray);
         
