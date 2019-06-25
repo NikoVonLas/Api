@@ -211,8 +211,9 @@ class BotApi
         }
         
         $response = $this->guzzle->request(($data) ? 'POST' : 'GET', $this->getUrl() . '/' . $method, $options);
-        $response = self::jsonValidate($response, $this->returnArray);
         file_put_contents('php://stderr', "\n" . 'Response: ' . $response . "\n");
+        $response = self::jsonValidate($response, $this->returnArray);
+        
         if ($this->returnArray) {
             if (!isset($response['ok'])) {
                 throw new Exception($response['description'], $response['error_code']);
