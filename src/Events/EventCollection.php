@@ -4,7 +4,7 @@ namespace TelegramBot\Api\Events;
 
 use Closure;
 use ReflectionFunction;
-use TelegramBot\Api\Botan;
+use TelegramBot\Api\Botlytics;
 use TelegramBot\Api\Types\Update;
 
 class EventCollection
@@ -17,9 +17,9 @@ class EventCollection
     protected $events;
 
     /**
-     * Botan tracker
+     * Botlytics tracker
      *
-     * @var \TelegramBot\Api\Botan
+     * @var \TelegramBot\Api\Botlytics
      */
     protected $tracker;
 
@@ -31,7 +31,7 @@ class EventCollection
     public function __construct($trackerToken = null)
     {
         if ($trackerToken) {
-            $this->tracker = new Botan($trackerToken);
+            $this->tracker = new Botlytics($trackerToken);
         }
     }
 
@@ -64,7 +64,7 @@ class EventCollection
                 if (false === $event->executeAction($update)) {
                     if (!is_null($this->tracker)) {
                         $checker = new ReflectionFunction($event->getChecker());
-                        $this->tracker->track($update->getMessage(), $checker->getStaticVariables()['name']);
+                        $this->tracker->track($update->getMessage(), $checker->getStaticVariables()['name'], 'incoming');
                     }
                     break;
                 }

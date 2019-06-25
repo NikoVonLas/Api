@@ -201,7 +201,7 @@ class BotApi
     public function call($method, array $data = null)
     {
         $options = [
-            'timeout' => 10 
+            'timeout' => 10
         ];
         if (!empty($this->proxySettings)) {
             $options['proxy'] = $this->proxySettings;
@@ -858,7 +858,7 @@ class BotApi
         $file = $this->getFile($fileId);
 
         $options = [
-            'timeout' => 10 
+            'timeout' => 10
         ];
         if (!empty($this->proxySettings)) {
             $options['proxy'] = $this->proxySettings;
@@ -1153,7 +1153,7 @@ class BotApi
      *
      * @param \TelegramBot\Api\Types\Message $message
      * @param string $payload
-     * @param string "incoming" or "outgoing" $kind 
+     * @param string "incoming" or "outgoing" $kind
      *
      * @throws \TelegramBot\Api\Exception
      */
@@ -1658,7 +1658,7 @@ class BotApi
         if (empty($proxyString)) {
             $this->proxySettings = '';
         } else {
-            $this->proxySettings = $proxyString;          
+            $this->proxySettings = $proxyString;
         }
     }
 }
