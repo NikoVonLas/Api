@@ -55,7 +55,7 @@ class EventCollectionTest extends \PHPUnit_Framework_TestCase
     {
         $item = new EventCollection('testToken');
 
-        $this->assertAttributeInstanceOf('\TelegramBot\Api\Botan', 'tracker', $item);
+        $this->assertAttributeInstanceOf('\TelegramBot\Api\Botlytics', 'tracker', $item);
         $this->assertAttributeEmpty('events', $item);
     }
 
@@ -120,7 +120,7 @@ class EventCollectionTest extends \PHPUnit_Framework_TestCase
             return true;
         });
 
-        $mockedTracker = $this->getMockBuilder('\TelegramBot\Api\Botan')
+        $mockedTracker = $this->getMockBuilder('\TelegramBot\Api\Botlytics')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -151,7 +151,7 @@ class EventCollectionTest extends \PHPUnit_Framework_TestCase
             return true;
         });
 
-        $mockedTracker = $this->getMockBuilder('\TelegramBot\Api\Botan')
+        $mockedTracker = $this->getMockBuilder('\TelegramBot\Api\Botlytics')
             ->disableOriginalConstructor()
             ->getMock();
 

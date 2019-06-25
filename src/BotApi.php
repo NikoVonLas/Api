@@ -222,7 +222,6 @@ class BotApi
             if (!isset($response['ok'])) {
                 throw new Exception($response['description'], $response['error_code']);
             }
-
             return $response['result'];
         }
 
@@ -245,7 +244,6 @@ class BotApi
     public static function jsonValidate($jsonString, $asArray)
     {
         $json = json_decode($jsonString, $asArray);
-        file_put_contents('php://stderr', "\n" . 'Response JSON: ' . $json . "\n");
         if (json_last_error() != JSON_ERROR_NONE) {
             throw new InvalidJsonException(json_last_error_msg(), json_last_error());
         }

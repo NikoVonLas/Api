@@ -49,7 +49,7 @@ class Botlytics
      *
      * @param \TelegramBot\Api\Types\Message $message
      * @param string $payload
-     * @param string "incoming" or "outgoing" $kind 
+     * @param string "incoming" or "outgoing" $kind
      *
      * @throws \TelegramBot\Api\Exception
      * @throws \TelegramBot\Api\HttpException
