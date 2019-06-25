@@ -207,7 +207,7 @@ class BotApi
             $options['proxy'] = $this->proxySettings;
         }
         if ($data) {
-            $options['body'] = $data;
+            $options['form_params'] = $data;
         }
         
         $response = $this->guzzle->request(($data) ? 'POST' : 'GET', $this->getUrl() . '/' . $method, $options);
