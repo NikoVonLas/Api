@@ -122,18 +122,11 @@ class BotApi
     const FILE_URL_PREFIX = 'https://api.telegram.org/file/bot';
 
     /**
-     * CURL object
+     * Guzzle object
      *
      * @var
      */
-    protected $curl;
-
-    /**
-     * CURL custom options
-     *
-     * @var array
-     */
-    protected $customCurlOptions = [];
+    protected $guzzle;
 
     /**
      * Bot token
@@ -171,7 +164,7 @@ class BotApi
      */
     public function __construct($token, $trackerToken = null)
     {
-        $this->curl = curl_init();
+        $this->guzzle = new \GuzzleHttp\Client();
         $this->token = $token;
 
         if ($trackerToken) {
@@ -202,29 +195,23 @@ class BotApi
      *
      * @return mixed
      * @throws \TelegramBot\Api\Exception
-     * @throws \TelegramBot\Api\HttpException
+     * @throws \GuzzleHttp\Exception\RequestException
      * @throws \TelegramBot\Api\InvalidJsonException
      */
     public function call($method, array $data = null)
     {
-        $options = $this->proxySettings + [
-            CURLOPT_URL => $this->getUrl().'/'.$method,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_POST => null,
-            CURLOPT_POSTFIELDS => null,
-            CURLOPT_TIMEOUT => 5,
+        $options = [
+            'timeout' => 10 
         ];
-
+        if (!empty($this->proxySettings)) {
+            $options['proxy'] = $this->proxySettings;
+        }
         if ($data) {
-            $options[CURLOPT_POST] = true;
-            $options[CURLOPT_POSTFIELDS] = $data;
+            $options['body'] = $data;
         }
-
-        if (!empty($this->customCurlOptions) && is_array($this->customCurlOptions)) {
-            $options += $this->customCurlOptions;
-        }
-
-        $response = self::jsonValidate($this->executeCurl($options), $this->returnArray);
+        
+        $response = $this->guzzle->request(($data) ? 'POST' : 'GET', $this->getUrl() . '/' . $method, $options);
+        $response = self::jsonValidate($response, $this->returnArray);
 
         if ($this->returnArray) {
             if (!isset($response['ok'])) {
@@ -239,47 +226,6 @@ class BotApi
         }
 
         return $response->result;
-    }
-
-    /**
-     * curl_exec wrapper for response validation
-     *
-     * @param array $options
-     *
-     * @return string
-     *
-     * @throws \TelegramBot\Api\HttpException
-     */
-    protected function executeCurl(array $options)
-    {
-        curl_setopt_array($this->curl, $options);
-
-        $result = curl_exec($this->curl);
-        self::curlValidate($this->curl, $result);
-        if ($result === false) {
-            throw new HttpException(curl_error($this->curl), curl_errno($this->curl));
-        }
-
-        return $result;
-    }
-
-    /**
-     * Response validation
-     *
-     * @param resource $curl
-     * @param string $response
-     * @throws HttpException
-     */
-    public static function curlValidate($curl, $response = null)
-    {
-        $json = json_decode($response, true)?: [];
-        if (($httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE))
-            && !in_array($httpCode, [self::DEFAULT_STATUS_CODE, self::NOT_MODIFIED_STATUS_CODE])
-        ) {
-            $errorDescription = array_key_exists('description', $json) ? $json['description'] : self::$codes[$httpCode];
-            $errorParameters = array_key_exists('parameters', $json) ? $json['parameters'] : [];
-            throw new HttpException($errorDescription, $httpCode, null, $errorParameters);
-        }
     }
 
     /**
@@ -899,25 +845,29 @@ class BotApi
     }
 
     /**
-     * Get file contents via cURL
+     * Get file contents via Guzzle
      *
      * @param $fileId
      *
      * @return string
      *
-     * @throws \TelegramBot\Api\HttpException
+     * @throws \GuzzleHttp\Exception\RequestException
      */
     public function downloadFile($fileId)
     {
         $file = $this->getFile($fileId);
-        $options = [
-            CURLOPT_HEADER => 0,
-            CURLOPT_HTTPGET => 1,
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_URL => $this->getFileUrl().'/'.$file->getFilePath(),
-        ];
 
-        return $this->executeCurl($options);
+        $options = [
+            'timeout' => 10 
+        ];
+        if (!empty($this->proxySettings)) {
+            $options['proxy'] = $this->proxySettings;
+        }
+        if ($data) {
+            $options['body'] = $data;
+        }
+        
+        return $this->guzzle->request('GET', $this->getFileUrl().'/'.$file->getFilePath(), $options);
     }
 
     /**
@@ -1161,14 +1111,6 @@ class BotApi
             'chat_id' => $chatId,
             'message_id' => $messageId,
         ]);
-    }
-
-    /**
-     * Close curl
-     */
-    public function __destruct()
-    {
-        $this->curl && curl_close($this->curl);
     }
 
     /**
@@ -1706,52 +1648,17 @@ class BotApi
     }
 
     /**
-     * Enable proxy for curl requests. Empty string will disable proxy.
+     * Enable proxy for Guzzle requests. Empty string will disable proxy.
      *
      * @param string $proxyString
      *
-     * @return BotApi
      */
     public function setProxy($proxyString = '')
     {
         if (empty($proxyString)) {
-            $this->proxySettings = [];
-            return $this;
+            $this->proxySettings = '';
+        } else {
+            $this->proxySettings = $proxyString;          
         }
-
-        $this->proxySettings = [
-            CURLOPT_PROXY => $proxyString,
-            CURLOPT_HTTPPROXYTUNNEL => true,
-        ];
-        return $this;
-    }
-
-    /**
-     * Set an option for a cURL transfer
-     *
-     * @param int $option The CURLOPT_XXX option to set
-     * @param mixed $value The value to be set on option
-     */
-    public function setCurlOption($option, $value)
-    {
-        $this->customCurlOptions[$option] = $value;
-    }
-
-    /**
-     * Unset an option for a cURL transfer
-     *
-     * @param int $option The CURLOPT_XXX option to unset
-     */
-    public function unsetCurlOption($option)
-    {
-        unset($this->customCurlOptions[$option]);
-    }
-
-    /**
-     * Clean custom options
-     */
-    public function resetCurlOptions()
-    {
-        $this->customCurlOptions = [];
     }
 }
