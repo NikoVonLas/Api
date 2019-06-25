@@ -62,7 +62,7 @@ class Botlytics
                 'text'  => (empty($message->getText())) ? 'empty' : $message->getText(),
                 'kind'  => $kind,
                 'conversation_identifier' => $message->getChat()->getId(),
-                'sender_identifier' => $uid,
+                'sender_identifier' => (!empty($message->getFrom()->getUsername())) ? $message->getFrom()->getUsername() : $message->getFrom()->getId(),
                 'platform' => 'telegram',
                 'payload' => $payload
             ]
