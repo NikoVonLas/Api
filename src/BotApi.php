@@ -214,9 +214,8 @@ class BotApi
         if ($response->getStatusCode() == 200) {
             $response = $response->getBody();
         } else {
-            throw new Exception(!empty($response->getReasonPhrase()) ? $response->getReasonPhrase(); : 'Guzzle request error', $response->getStatusCode());
+            throw new Exception(!empty($response->getReasonPhrase()) ? $response->getReasonPhrase() : 'Guzzle request error', $response->getStatusCode());
         }
-        file_put_contents('php://stderr', "\n" . 'Response: ' . $response . "\n");
         $response = self::jsonValidate($response, $this->returnArray);
         
         if ($this->returnArray) {
@@ -872,8 +871,9 @@ class BotApi
         if ($data) {
             $options['body'] = $data;
         }
-        
-        return $this->guzzle->request('GET', $this->getFileUrl().'/'.$file->getFilePath(), $options);
+
+        $response = $this->guzzle->request('GET', $this->getFileUrl().'/'.$file->getFilePath(), $options);
+        return $response->getBody();
     }
 
     /**
